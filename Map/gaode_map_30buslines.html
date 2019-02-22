@@ -1,0 +1,637 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>画文章图</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <style>
+        html,
+        body,
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div class="input-card" style='width:18rem;'>
+        <label style='color:grey'>公交线路查询</label>
+        <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text">线路名称</span></div>
+            <input id='BusLineName' type="text" value='10'>
+        </div>
+        <input id="search" type="button" class="btn" value="查询" />
+    </div>
+    <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.11&key=1db839cb9d55698702de91738c1b93e2&plugin=AMap.LineSearch"></script>
+    <script>
+        /* 初始化地图 */
+        var map = new AMap.Map('container', {
+            resizeEnable: true,
+            // center: [121.498586, 31.239637],
+            zoom: 11,
+            lang: "zh_cn", //可选值：en，zh_en, zh_cn
+            mapStyle: "amap://styles/light",  //可选值：darkblue, blue, grey, dark, light
+            showLabel: false,
+        });
+        AMap.plugin([
+            'AMap.ToolBar',
+        ], function () {
+            /* 在图面添加工具条控件，工具条控件集成了缩放、平移、定位等功能按钮在内的组合控件 */
+            map.addControl(new AMap.ToolBar({
+                /* 简易缩放模式，默认为 false */
+                liteStyle: true
+            }));
+        });
+        var linesearch;
+        /* 公交线路查询 */
+        function lineSearch(busLineName) {
+            // var busLineName = document.getElementById('BusLineName').value;
+            if (!busLineName) return;
+            /* 实例化公交线路查询类，只取回一条路线 */
+            if (!linesearch) {
+                linesearch = new AMap.LineSearch({
+                    pageIndex: 1,
+                    city: 'wuhan',
+                    pageSize: 1,
+                    extensions: 'all'
+                });
+            }
+            /* 搜索相关公交线路 */
+            linesearch.search(busLineName, function (status, result) {
+                // map.clearMap()
+                if (status === 'complete' && result.info === 'OK') {
+                    lineSearch_Callback(result);
+                } else {
+                    alert(result);
+                }
+            });
+        }
+        /* 公交路线查询服务返回数据解析概况 */
+        function lineSearch_Callback(data) {
+            var lineArr = data.lineInfo;
+            var lineNum = data.lineInfo.length;
+            if (lineNum == 0) {
+            } else {
+                for (var i = 0; i < lineNum; i++) {
+                    var pathArr = lineArr[i].path;
+                    var stops = lineArr[i].via_stops;
+                    var startPot = stops[0].location;
+                    var endPot = stops[stops.length - 1].location;
+                    if (i == 0) //作为示例，只绘制一条线路
+                        drawbusLine(startPot, endPot, pathArr);
+
+                }
+            }
+        }
+        /* 绘制路线 */
+        function drawbusLine(startPot, endPot, BusArr) {
+            /* 绘制起点，终点 */
+            // new AMap.Marker({
+            //     map: map,
+            //     position: startPot, //基点位置
+            //     // icon: "https://webapi.amap.com/theme/v1.3/markers/n/start.png",
+            //     zIndex: 10
+            // });
+            // new AMap.Marker({
+            //     map: map,
+            //     position: endPot, //基点位置
+            //     // icon: "https://webapi.amap.com/theme/v1.3/markers/n/end.png",
+            //     zIndex: 10
+            // });
+            /* 绘制乘车的路线 */
+            busPolyline = new AMap.Polyline({
+                map: map,
+                path: BusArr,
+                strokeColor: '#6BCE96',
+                // strokeColor: '#C44F5C',
+                strokeOpacity: 0.7,  //线透明度
+                isOutline: true,
+                // outlineColor: 'white',
+                strokeWeight: 3  //线宽
+            });
+            // map.setFitView();
+        }
+        lineSearch('1');
+        lineSearch('2');
+        lineSearch('3');
+        lineSearch('4');
+        lineSearch('5');
+        lineSearch('5');
+        lineSearch('6');
+        lineSearch('7');
+        lineSearch('9');
+        lineSearch('10');
+        lineSearch('11');
+        lineSearch('14');
+        lineSearch('15');
+        lineSearch('16');
+        lineSearch('19');
+        lineSearch('20');
+        lineSearch('23');
+        lineSearch('24');
+        lineSearch('30');
+        lineSearch('33');
+        lineSearch('35');
+        lineSearch('38');
+        lineSearch('42');
+        lineSearch('43');
+        lineSearch('45');
+        lineSearch('46');
+        lineSearch('50');
+        lineSearch('53');
+        lineSearch('56');
+        lineSearch('60');
+        /* lineSearch('1');
+        lineSearch('1');
+        lineSearch('2');
+        lineSearch('2');
+        lineSearch('3');
+        lineSearch('3');
+        lineSearch('4');
+        lineSearch('4');
+        lineSearch('5');
+        lineSearch('5');
+        lineSearch('5');
+        lineSearch('5');
+        lineSearch('6');
+        lineSearch('6');
+        lineSearch('7');
+        lineSearch('7');
+        lineSearch('9');
+        lineSearch('9');
+        lineSearch('10');
+        lineSearch('10');
+        lineSearch('11');
+        lineSearch('11');
+        lineSearch('14');
+        lineSearch('14');
+        lineSearch('15');
+        lineSearch('15');
+        lineSearch('16');
+        lineSearch('16');
+        lineSearch('19');
+        lineSearch('19');
+        lineSearch('20');
+        lineSearch('20');
+        lineSearch('23');
+        lineSearch('23');
+        lineSearch('24');
+        lineSearch('24');
+        lineSearch('30');
+        lineSearch('30');
+        lineSearch('33');
+        lineSearch('33');
+        lineSearch('35');
+        lineSearch('35');
+        lineSearch('38');
+        lineSearch('38');
+        lineSearch('42');
+        lineSearch('42');
+        lineSearch('43');
+        lineSearch('43');
+        lineSearch('45');
+        lineSearch('45');
+        lineSearch('46');
+        lineSearch('46');
+        lineSearch('50');
+        lineSearch('50');
+        lineSearch('53');
+        lineSearch('53');
+        lineSearch('56');
+        lineSearch('56');
+        lineSearch('60');
+        lineSearch('60');
+        lineSearch('61');
+        lineSearch('61');
+        lineSearch('66');
+        lineSearch('66');
+        lineSearch('68');
+        lineSearch('68');
+        lineSearch('70');
+        lineSearch('70');
+        lineSearch('76');
+        lineSearch('76');
+        lineSearch('79');
+        lineSearch('79');
+        lineSearch('59');
+        lineSearch('59');
+        lineSearch('108');
+        lineSearch('108');
+        lineSearch('501');
+        lineSearch('501');
+        lineSearch('502');
+        lineSearch('502');
+        lineSearch('503');
+        lineSearch('503');
+        lineSearch('505');
+        lineSearch('505');
+        lineSearch('506');
+        lineSearch('506');
+        lineSearch('507');
+        lineSearch('507');
+        lineSearch('508');
+        lineSearch('508');
+        lineSearch('509');
+        lineSearch('509');
+        lineSearch('510');
+        lineSearch('510');
+        lineSearch('511');
+        lineSearch('511');
+        lineSearch('512');
+        lineSearch('512');
+        lineSearch('514');
+        lineSearch('514');
+        lineSearch('515');
+        lineSearch('515');
+        lineSearch('517');
+        lineSearch('517');
+        lineSearch('518');
+        lineSearch('518');
+        lineSearch('518');
+        lineSearch('518');
+        lineSearch('519');
+        lineSearch('519');
+        lineSearch('520');
+        lineSearch('520');
+        lineSearch('521');
+        lineSearch('521');
+        lineSearch('522');
+        lineSearch('522');
+        lineSearch('523');
+        lineSearch('523');
+        lineSearch('524');
+        lineSearch('524');
+        lineSearch('526');
+        lineSearch('526');
+        lineSearch('527');
+        lineSearch('527');
+        lineSearch('528');
+        lineSearch('528');
+        lineSearch('529');
+        lineSearch('529');
+        lineSearch('530');
+        lineSearch('530');
+        lineSearch('530');
+        lineSearch('530');
+        lineSearch('531');
+        lineSearch('531');
+        lineSearch('532');
+        lineSearch('532');
+        lineSearch('533');
+        lineSearch('533');
+        lineSearch('534');
+        lineSearch('534');
+        lineSearch('535');
+        lineSearch('535');
+        lineSearch('536');
+        lineSearch('536');
+        lineSearch('537');
+        lineSearch('537');
+        lineSearch('538');
+        lineSearch('538');
+        lineSearch('539');
+        lineSearch('539');
+        lineSearch('540');
+        lineSearch('540');
+        lineSearch('541');
+        lineSearch('541');
+        lineSearch('542');
+        lineSearch('542');
+        lineSearch('543');
+        lineSearch('543');
+        lineSearch('545');
+        lineSearch('545');
+        lineSearch('546');
+        lineSearch('546');
+        lineSearch('548');
+        lineSearch('548');
+        lineSearch('549');
+        lineSearch('549');
+        lineSearch('550');
+        lineSearch('550');
+        lineSearch('552');
+        lineSearch('552');
+        lineSearch('553');
+        lineSearch('553');
+        lineSearch('554');
+        lineSearch('554');
+        lineSearch('555');
+        lineSearch('555');
+        lineSearch('556');
+        lineSearch('556');
+        lineSearch('558');
+        lineSearch('558');
+        lineSearch('559');
+        lineSearch('559');
+        lineSearch('560');
+        lineSearch('560');
+        lineSearch('561');
+        lineSearch('561');
+        lineSearch('563');
+        lineSearch('563');
+        lineSearch('564');
+        lineSearch('564');
+        lineSearch('565');
+        lineSearch('565');
+        lineSearch('570');
+        lineSearch('570');
+        lineSearch('571');
+        lineSearch('571');
+        lineSearch('572');
+        lineSearch('572');
+        lineSearch('573');
+        lineSearch('573');
+        lineSearch('575');
+        lineSearch('575');
+        lineSearch('576');
+        lineSearch('576');
+        lineSearch('577');
+        lineSearch('577');
+        lineSearch('578');
+        lineSearch('578');
+        lineSearch('579');
+        lineSearch('579');
+        lineSearch('581');
+        lineSearch('581');
+        lineSearch('583');
+        lineSearch('583');
+        lineSearch('584');
+        lineSearch('584');
+        lineSearch('585');
+        lineSearch('585');
+        lineSearch('586');
+        lineSearch('586');
+        lineSearch('587');
+        lineSearch('587');
+        lineSearch('588');
+        lineSearch('588');
+        lineSearch('590');
+        lineSearch('590');
+        lineSearch('591');
+        lineSearch('591');
+        lineSearch('592');
+        lineSearch('592');
+        lineSearch('593');
+        lineSearch('593');
+        lineSearch('594');
+        lineSearch('594');
+        lineSearch('595');
+        lineSearch('595');
+        lineSearch('596');
+        lineSearch('596');
+        lineSearch('597');
+        lineSearch('597');
+        lineSearch('598');
+        lineSearch('598');
+        lineSearch('599');
+        lineSearch('599');
+        lineSearch('601');
+        lineSearch('601');
+        lineSearch('603');
+        lineSearch('603');
+        lineSearch('604');
+        lineSearch('604');
+        lineSearch('605');
+        lineSearch('605');
+        lineSearch('606');
+        lineSearch('606');
+        lineSearch('607');
+        lineSearch('607');
+        lineSearch('608');
+        lineSearch('608');
+        lineSearch('609');
+        lineSearch('609');
+        lineSearch('610');
+        lineSearch('610');
+        lineSearch('621');
+        lineSearch('621');
+        lineSearch('622');
+        lineSearch('622');
+        lineSearch('701');
+        lineSearch('701');
+        lineSearch('702');
+        lineSearch('702');
+        lineSearch('702');
+        lineSearch('702');
+        lineSearch('703');
+        lineSearch('703');
+        lineSearch('704');
+        lineSearch('704');
+        lineSearch('705');
+        lineSearch('705');
+        lineSearch('706');
+        lineSearch('706');
+        lineSearch('707');
+        lineSearch('707');
+        lineSearch('708');
+        lineSearch('708');
+        lineSearch('709');
+        lineSearch('709');
+        lineSearch('710');
+        lineSearch('710');
+        lineSearch('711');
+        lineSearch('711');
+        lineSearch('712');
+        lineSearch('712');
+        lineSearch('713');
+        lineSearch('713');
+        lineSearch('715');
+        lineSearch('715');
+        lineSearch('716');
+        lineSearch('716');
+        lineSearch('717');
+        lineSearch('717');
+        lineSearch('718');
+        lineSearch('718');
+        lineSearch('719');
+        lineSearch('719');
+        lineSearch('720');
+        lineSearch('720');
+        lineSearch('721');
+        lineSearch('721');
+        lineSearch('723');
+        lineSearch('723');
+        lineSearch('724');
+        lineSearch('724');
+        lineSearch('725');
+        lineSearch('725');
+        lineSearch('726');
+        lineSearch('726');
+        lineSearch('727');
+        lineSearch('727');
+        lineSearch('728');
+        lineSearch('728');
+        lineSearch('729');
+        lineSearch('729');
+        lineSearch('730');
+        lineSearch('730');
+        lineSearch('732');
+        lineSearch('732');
+        lineSearch('733');
+        lineSearch('733');
+        lineSearch('735');
+        lineSearch('735');
+        lineSearch('736');
+        lineSearch('736');
+        lineSearch('737');
+        lineSearch('737');
+        lineSearch('739');
+        lineSearch('739');
+        lineSearch('741');
+        lineSearch('741');
+        lineSearch('755');
+        lineSearch('755');
+        lineSearch('756');
+        lineSearch('756');
+        lineSearch('757');
+        lineSearch('757');
+        lineSearch('758');
+        lineSearch('758');
+        lineSearch('769');
+        lineSearch('769');
+        lineSearch('801');
+        lineSearch('801');
+        lineSearch('801');
+        lineSearch('801');
+        lineSearch('802');
+        lineSearch('802');
+        lineSearch('803');
+        lineSearch('803');
+        lineSearch('804');
+        lineSearch('804');
+        lineSearch('805');
+        lineSearch('805');
+        lineSearch('806');
+        lineSearch('806');
+        lineSearch('807');
+        lineSearch('807');
+        lineSearch('808');
+        lineSearch('808');
+        lineSearch('808');
+        lineSearch('808');
+        lineSearch('809');
+        lineSearch('809');
+        lineSearch('811');
+        lineSearch('811');
+        lineSearch('18');
+        lineSearch('18');
+        lineSearch('25');
+        lineSearch('25');
+        lineSearch('26');
+        lineSearch('26');
+        lineSearch('32');
+        lineSearch('32');
+        lineSearch('34');
+        lineSearch('34');
+        lineSearch('40');
+        lineSearch('40');
+        lineSearch('47');
+        lineSearch('47');
+        lineSearch('58');
+        lineSearch('58');
+        lineSearch('69');
+        lineSearch('69');
+        lineSearch('71');
+        lineSearch('71');
+        lineSearch('72');
+        lineSearch('72');
+        lineSearch('74');
+        lineSearch('74');
+        lineSearch('201');
+        lineSearch('201');
+        lineSearch('202');
+        lineSearch('202');
+        lineSearch('203');
+        lineSearch('203');
+        lineSearch('204');
+        lineSearch('204');
+        lineSearch('205');
+        lineSearch('205');
+        lineSearch('207');
+        lineSearch('207');
+        lineSearch('208');
+        lineSearch('208');
+        lineSearch('211');
+        lineSearch('211');
+        lineSearch('212');
+        lineSearch('212');
+        lineSearch('213');
+        lineSearch('213');
+        lineSearch('215');
+        lineSearch('215');
+        lineSearch('218');
+        lineSearch('218');
+        lineSearch('218');
+        lineSearch('218');
+        lineSearch('222');
+        lineSearch('222');
+        lineSearch('231');
+        lineSearch('231');
+        lineSearch('291');
+        lineSearch('291');
+        lineSearch('292');
+        lineSearch('292');
+        lineSearch('64');
+        lineSearch('64');
+        lineSearch('64');
+        lineSearch('64');
+        lineSearch('401');
+        lineSearch('401');
+        lineSearch('402');
+        lineSearch('402');
+        lineSearch('411');
+        lineSearch('411');
+        lineSearch('413');
+        lineSearch('413');
+        lineSearch('301');
+        lineSearch('301');
+        lineSearch('303');
+        lineSearch('303');
+        lineSearch('305');
+        lineSearch('305');
+        lineSearch('306');
+        lineSearch('306');
+        lineSearch('307');
+        lineSearch('307');
+        lineSearch('308');
+        lineSearch('308');
+        lineSearch('309');
+        lineSearch('309');
+        lineSearch('312');
+        lineSearch('312');
+        lineSearch('315');
+        lineSearch('315');
+        lineSearch('316');
+        lineSearch('316');
+        lineSearch('317');
+        lineSearch('317');
+        lineSearch('318');
+        lineSearch('318');
+        lineSearch('901');
+        lineSearch('901');
+        lineSearch('902');
+        lineSearch('902');
+        lineSearch('903');
+        lineSearch('903');
+        lineSearch('905');
+        lineSearch('905');
+        lineSearch('906');
+        lineSearch('906');
+        lineSearch('907');
+        lineSearch('907');
+        lineSearch('910');
+        lineSearch('910');
+        lineSearch('913');
+        lineSearch('913'); */
+        document.getElementById('search').onclick = lineSearch(document.getElementById('BusLineName').value);
+        // map.setMapStyle("amap://styles/dark");
+    </script>
+</body>
+
+</html>

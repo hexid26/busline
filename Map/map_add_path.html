@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>公交线路查询</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <style type="text/css">
+        html,
+        body,
+        #container {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div class="input-card" style='width:18rem;'>
+        <label style='color:grey'>公交线路查询</label>
+        <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text">线路名称</span></div>
+            <input id='BusLineName' type="text" value='919'>
+        </div>
+        <input id="search" type="button" class="btn" value="查询" />
+        <input id="clear" type="button" class="btn" value="清除" />
+    </div>
+
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.11&key=1db839cb9d55698702de91738c1b93e2&plugin=AMap.LineSearch"></script>
+    <script language="javascript">
+        var map = new AMap.Map("container", {
+            resizeEnable: true,
+            // center: [121.498586, 31.239637],
+            zoom: 11,
+            lang: "zh_cn", //可选值：en，zh_en, zh_cn
+            mapStyle: "amap://styles/darkblue",  //可选值：darkblue, blue, grey, dark
+            showLabel: false,
+        });
+        AMap.plugin([
+            'AMap.ToolBar',
+        ], function () {
+            /* 在图面添加工具条控件，工具条控件集成了缩放、平移、定位等功能按钮在内的组合控件 */
+            map.addControl(new AMap.ToolBar({
+                /* 简易缩放模式，默认为 false */
+                liteStyle: true
+            }));
+        });
+        var linesearch;
+        /*公交线路查询*/
+        function lineSearch() {
+            var busLineName = document.getElementById('BusLineName').value;
+            if (!busLineName) return;
+            //实例化公交线路查询类，只取回一条路线
+            if (!linesearch) {
+                linesearch = new AMap.LineSearch({
+                    pageIndex: 1,
+                    city: 'wuhan',
+                    pageSize: 1,
+                    extensions: 'all'
+                });
+            }
+            //搜索“536”相关公交线路
+            linesearch.search(busLineName, function (status, result) {
+                // map.clearMap()
+                if (status === 'complete' && result.info === 'OK') {
+                    lineSearch_Callback(result);
+                } else {
+                    alert(result);
+                }
+            });
+        }
+        /*公交路线查询服务返回数据解析概况*/
+        function lineSearch_Callback(data) {
+            var lineArr = data.lineInfo;
+            var lineNum = data.lineInfo.length;
+            if (lineNum == 0) {
+            } else {
+                for (var i = 0; i < lineNum; i++) {
+                    var pathArr = lineArr[i].path;
+                    var stops = lineArr[i].via_stops;
+                    var startPot = stops[0].location;
+                    var endPot = stops[stops.length - 1].location;
+                    if (i == 0) //作为示例，只绘制一条线路
+                        drawbusLine(startPot, endPot, pathArr);
+
+                }
+            }
+        }
+        /*绘制路线*/
+        function drawbusLine(startPot, endPot, BusArr) {
+            /* 绘制起点，终点 */
+            // new AMap.Marker({
+            //     map: map,
+            //     position: startPot, //基点位置
+            //     // icon: "https://webapi.amap.com/theme/v1.3/markers/n/start.png",
+            //     zIndex: 10
+            // });
+            // new AMap.Marker({
+            //     map: map,
+            //     position: endPot, //基点位置
+            //     // icon: "https://webapi.amap.com/theme/v1.3/markers/n/end.png",
+            //     zIndex: 10
+            // });
+            /* 绘制乘车的路线 */
+            busPolyline = new AMap.Polyline({
+                map: map,
+                path: BusArr,
+                strokeColor: '#6BCE96',
+                // strokeColor: '#C44F5C',
+                strokeOpacity: 0.7,  //线透明度
+                isOutline: true,
+                // outlineColor: 'white',
+                strokeWeight: 3  //线宽
+            });
+            // map.setFitView();
+        }
+        function lineClear() {
+            map.clearMap()
+        }
+        // lineSearch();
+        lineSearch('1');
+        lineSearch('2');
+        lineSearch('3');
+        lineSearch('4');
+        lineSearch('5');
+        lineSearch('5');
+        lineSearch('6');
+        lineSearch('7');
+        lineSearch('9');
+        lineSearch('10');
+        lineSearch('11');
+        lineSearch('14');
+        lineSearch('15');
+        lineSearch('16');
+        lineSearch('19');
+        lineSearch('20');
+        lineSearch('23');
+        lineSearch('24');
+        lineSearch('30');
+        lineSearch('33');
+        lineSearch('35');
+        lineSearch('38');
+        lineSearch('42');
+        lineSearch('43');
+        lineSearch('45');
+        lineSearch('46');
+        lineSearch('50');
+        lineSearch('53');
+        lineSearch('56');
+        lineSearch('60');
+        document.getElementById('clear').onclick = lineClear;
+        document.getElementById('search').onclick = lineSearch;
+    </script>
+</body>
+
+</html>
